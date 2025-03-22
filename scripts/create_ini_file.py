@@ -153,11 +153,11 @@ if args.routingScheme == "lndBaselineSplit":
     modifiedRoutingScheme = "lndBaseline"
 
 
-if args.numPathChoices != 'default':
-    configname = configname + "_" + args.numPathChoices
-else:   
-    args.numPathChoices = '4'
-configname += "_" + args.schedulingAlgorithm
+# if args.numPathChoices != 'default':
+#     configname = configname + "_" + args.numPathChoices
+# else:   
+#     args.numPathChoices = '4'
+# configname += "_" + args.schedulingAlgorithm
 
 if args.rebalancingEnabled:
     configname += "_rebalancing"
