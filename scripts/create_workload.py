@@ -565,6 +565,7 @@ parser.add_argument('--graph-topo', \
         help='type of graph (Small world or scale free or custom topology)', default='simple_line')
 parser.add_argument('--payment-graph-dag-percentage', type=int,\
 	help='percentage of circulation to put in the payment graph', default=0)
+parser.add_argument('--wallet-enabled', type=bool, default=True, help='Enable wallet functionality')
 parser.add_argument('--topo-filename', dest='topo_filename', type=str, \
         help='name of topology file to generate worklooad for')
 parser.add_argument('output_file_prefix', type=str, help='name of the output workload file', \

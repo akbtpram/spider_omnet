@@ -27,6 +27,12 @@ echo $routing_scheme
 random_init_bal=false
 random_capacity=false
 
+# New wallet architecture parameters
+wallet_enabled=true                # Enable the wallet architecture
+wallet_reconciliation_rate=1.0     # How often wallet reconciles with node channel books (in seconds)
+wallet_logging_enabled=true        # Log wallet transactions and operations
+wallet_threshold=0.01              # Minimum balance threshold for transactions
+
 widestPathsEnabled=false
 obliviousRoutingEnabled=false
 kspYenEnabled=false
@@ -73,6 +79,9 @@ done
 cp hostNodeLandmarkRouting.ned ${PATH_NAME}
 cp routerNodeDCTCPBal.ned ${PATH_NAME}
 cp hostNodePropFairPriceScheme.ned ${PATH_NAME}
+
+# Copy the new wallet architecture NED files
+cp wallet.ned ${PATH_NAME}
 
 
 arraylength=${#prefix[@]}
@@ -142,7 +151,8 @@ do
                 --separate-end-hosts \
                 --delay-per-channel $delay\
                 --randomize-start-bal $random_init_bal\
-                --random-channel-capacity $random_capacity 
+                --random-channel-capacity $random_capacity\
+                --wallet-enabled $wallet_enabled
 
 
         # create workload files and run different demand levels
@@ -185,7 +195,8 @@ do
                     --generate-json-also \
                     --timeout-value 5 \
                     --scale-amount $scale \
-                    --run-num 0 
+                    --run-num 0 \
+                    --wallet-enabled $wallet_enabled \
 
             # STEP 3: run the experiment
             # routing schemes where number of path choices doesn't matter
@@ -210,7 +221,11 @@ do
                       --transStatStart $transStatStart\
                       --transStatEnd $transStatEnd\
                       --path-choice $pathChoice\
-                      --balance $balance
+                      --balance $balance\
+                      --wallet-enabled $wallet_enabled\
+                      --wallet-reconciliation-rate $wallet_reconciliation_rate\
+                      --wallet-logging-enabled $wallet_logging_enabled\
+                      --wallet-threshold $wallet_threshold
 
 
               # run the omnetexecutable with the right parameters
@@ -274,7 +289,11 @@ do
                         --balance-ecn-threshold $balanceThreshold \
                         --mtu $mtu\
                         --min-dctcp-window $minDCTCPWindow \
-                        --rate-decrease-frequency $rateDecreaseFrequency
+                        --rate-decrease-frequency $rateDecreaseFrequency \
+                        --wallet-enabled $wallet_enabled\
+                        --wallet-reconciliation-rate $wallet_reconciliation_rate\
+                        --wallet-logging-enabled $wallet_logging_enabled\
+                        --wallet-threshold $wallet_threshold
 
 
                 # run the omnetexecutable with the right parameters
@@ -294,6 +313,7 @@ do
             if [ "$timeoutEnabled" = true ] ; then timeout=""; else timeout="no_timeouts"; fi
             if [ "$random_init_bal" = true ] ; then suffix="randomInitBal_"; else suffix=""; fi
             if [ "$random_capacity" = true ]; then suffix="${suffix}randomCapacity_"; fi
+            if [ "$wallet_enabled" = true ]; then suffix="${suffix}wallet_"; fi
             echo $suffix
             graph_op_prefix=${GRAPH_PATH}${timeout}/${prefix[i]}${balance}_delay${delay}_demand${scale}0_${suffix}
             vec_file_prefix=${PATH_NAME}results/${prefix[i]}_${payment_graph_type}_net_${balance}_
@@ -312,12 +332,11 @@ do
                   --balance \
                   --queue_info --timeouts --frac_completed \
                   --inflight --timeouts_sender \
-                  --waiting --bottlenecks --time_inflight
-            
+                  --waiting --bottlenecks --time_inflight \
 
             #routing schemes where number of path choices matter
             else
-              for numPathChoices in 4
+                for numPathChoices in 4
                 do
                     vec_file_path=${vec_file_prefix}${routing_scheme}_demand${scale}_${pathChoice}_${numPathChoices}_${schedulingAlgorithm}-#0.vec
                     sca_file_path=${vec_file_prefix}${routing_scheme}_demand${scale}_${pathChoice}_${numPathChoices}_${schedulingAlgorithm}-#0.sca
@@ -336,9 +355,10 @@ do
                       --mu_local --lambda --n_local --service_arrival_ratio --inflight_outgoing \
                       --inflight_incoming --rate_to_send --price --mu_remote --demand \
                       --rate_sent --amt_inflight_per_path --rate_acked --fraction_marked --queue_delay \
-                      --cpi --perDestQueue --kStar
-                  done
-              fi
+                      --cpi --perDestQueue --kStar \
+
+                done
+            fi
 
             # STEP 5: cleanup        
             #rm ${PATH_NAME}${prefix[i]}_circ*_demand${scale}.ini

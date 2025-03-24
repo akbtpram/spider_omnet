@@ -106,6 +106,8 @@ MEASUREMENT_INTERVAL = 200 # transStatEnd - start in experiments
 EC2_INSTANCE_ADDRESS="ec2-34-224-216-215.compute-1.amazonaws.com"
 PORT_NUMBER=8000
 
+
+
 # json parameters for lnd testbed
 ENDHOST_LND_ONE_WAY_CAPACITY = 1000000000
 ROUTER_CAPACITY = 100

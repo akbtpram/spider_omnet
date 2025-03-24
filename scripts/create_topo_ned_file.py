@@ -276,6 +276,7 @@ def print_topology_in_format(G, balance_per_channel, delay_per_channel, output_f
 # parse arguments
 parser = argparse.ArgumentParser(description="Create arbitrary topologies to run the omnet simulator on")
 parser.add_argument('--num-nodes', type=int, dest='num_nodes', help='number of nodes in the graph', default=20)
+parser.add_argument('--wallet-enabled', type=bool, default=False, help='Enable wallet functionality')
 parser.add_argument('--delay-per-channel', type=int, dest='delay_per_channel', \
         help='delay between nodes (ms)', default=30)
 parser.add_argument('graph_type', choices=['small_world', 'scale_free', 'hotnets_topo', 'simple_line', 'toy_dctcp', \

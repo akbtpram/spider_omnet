@@ -448,6 +448,7 @@ int routerNodeBase::forwardTransactionMessage(routerMsg *msg, int neighborIdx, s
     int nextDest = neighborIdx; 
     int transactionId = transMsg->getTransactionId();
     PaymentChannel *neighbor = &(nodeToPaymentChannel[nextDest]);
+    wallet *neighborWallet = &(nodeToWallet[nextDest]);
     int amt = transMsg->getAmount();
 
     // return true directly if txn has been cancelled
@@ -462,7 +463,7 @@ int routerNodeBase::forwardTransactionMessage(routerMsg *msg, int neighborIdx, s
         return 1;
     }
 
-    if (neighbor->balance <= 0 || transMsg->getAmount() > neighbor->balance){
+    if (neighbor->balance <= 0 || transMsg->getAmount() > neighborWallet->getCurrentBalance()){
         return 0;
     }
     else {
@@ -490,6 +491,10 @@ int routerNodeBase::forwardTransactionMessage(routerMsg *msg, int neighborIdx, s
         neighbor-> balanceEWMA = (1 -_ewmaFactor) * neighbor->balanceEWMA + 
             (_ewmaFactor) * newBalance;
         neighbor->totalAmtInQueue -= amt;
+
+        // updating wallet balance
+        double newWalletBalance = neighborWallet->getCurrentBalance() - amt;
+        setWalletBalance(nextDest, newWalletBalance);
 
         if (_loggingEnabled) cout << "forwardTransactionMsg send: " << simTime() << endl;
         send(msg, nodeToPaymentChannel[nextDest].gate);
@@ -714,6 +719,9 @@ void routerNodeBase::handleAckMessage(routerMsg* ttmsg){
                 (1 -_ewmaFactor) * prevChannel->balanceEWMA + (_ewmaFactor) * updatedBalance; 
             prevChannel->totalAmtOutgoingInflight -= aMsg->getAmount();
             setPaymentChannelBalanceByNode(prevNode, updatedBalance);
+
+            double updatedWalletBalance = nodeToWallet[prevNode].getCurrentBalance() + aMsg->getAmount();
+            setWalletBalance(prevNode, updatedWalletBalance);
         }
         
         // this is nextNode on the ack path and so prev node in the forward path or rather
@@ -1036,4 +1044,8 @@ void routerNodeBase::handleClearStateMessage(routerMsg* ttmsg){
  */ 
 void routerNodeBase::setPaymentChannelBalanceByNode(int node, double amt) {
        nodeToPaymentChannel[node].balance = amt;
+}
+
+void routerNodeBase::setWalletBalance(int node, double amt) {
+    nodeToWallet[node].setCurrentBalance(amt);
 }

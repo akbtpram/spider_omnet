@@ -11,6 +11,10 @@ parser.add_argument('--ini-filename', type=str, help='name of ini file', default
 parser.add_argument('--simulation-length', type=str, help='duration of simulation in seconds', dest='simulationLength', default='30.0')
 parser.add_argument('--stat-collection-rate', type=str, help='rate of collecting stats', dest='statRate', \
         default='0.2')
+parser.add_argument('--wallet-enabled', type=bool, default=False, help='Enable wallet functionality')
+parser.add_argument('--wallet-reconciliation-rate', type=float, default=1.0, help='Set wallet reconciliation rate')
+parser.add_argument('--wallet-logging-enabled', type=bool, default=False, help='Enable wallet logging')
+parser.add_argument('--wallet-threshold', type=float, default=0.01, help='Set wallet threshold')
 parser.add_argument('--signals-enabled', type=str, help='are signals enabled?', dest='signalsEnabled', default='false')
 parser.add_argument('--logging-enabled', type=str, help='is logging enabled?', dest='loggingEnabled', default='false')
 parser.add_argument('--window-enabled', type=str, help='is window enabled?', dest='windowEnabled', default='false')

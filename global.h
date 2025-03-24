@@ -33,6 +33,7 @@
 #include "structs/PathRateTuple.h"
 #include "structs/ProbeInfo.h"
 #include "structs/DestNodeStruct.h"
+#include "wallet.h"
 
 #define MSGSIZE 100
 using namespace std;
@@ -45,6 +46,34 @@ struct LaterTransUnit
   }
 };
 
+#include <functional>  // For std::hash
+
+// Custom hash function for tuple<int, int, int>
+struct hashTriplet {
+    std::size_t operator()(const std::tuple<int, int, int>& key) const {
+        auto [a, b, c] = key;
+        std::size_t h1 = std::hash<int>{}(a);
+        std::size_t h2 = std::hash<int>{}(b);
+        std::size_t h3 = std::hash<int>{}(c);
+        return h1 ^ (h2 << 1) ^ (h3 << 2); // Combine hashes
+    }
+};
+
+// Wallet-related global variables
+extern std::unordered_map<int, double> _nodeWalletBalances;  // Maps node ID to its wallet balance
+extern unordered_map<int, unordered_map<int, double>> _nodeChannelStakes;  // Maps node ID to a map of channel IDs and staked amounts
+extern bool _walletArchitectureEnabled;  // Flag to enable/disable wallet architecture
+
+// Wallet functionality parameters
+extern double _walletReconcilingRate;  // How often wallet reconciles with channel bookkeeping
+extern bool _walletLoggingEnabled;  // Enable detailed logging for wallet operations
+extern double _walletTransactionThreshold;  // Minimum wallet balance required as a percentage of transaction amount
+
+extern unordered_map<int, unordered_map<int, bool>> _channelValidityMap;  // Maps node to channel validity status
+extern unordered_map<int, vector<int>> _nodeToChannelsMap;  // Maps node to its list of channels
+
+extern unordered_map<tuple<int,int,int>, double, hashTriplet> _pendingWalletTransactions;  // Source, destination, transaction ID to amount
+extern unordered_map<int, queue<pair<int, double>>> _walletTransactionQueue;  // Queue of pending transactions for each node
 
 //global parameters
 extern unordered_map<int, priority_queue<TransUnit, vector<TransUnit>, LaterTransUnit>> _transUnitList;

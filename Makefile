@@ -19,7 +19,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LI
 INCLUDE_PATH = -I.
 
 # Additional object and library files to link with
-EXTRA_OBJS =
+EXTRA_OBJS = 
 
 # Additional libraries (-L, -l options)
 LIBS =
@@ -56,7 +56,8 @@ OBJS = \
     $O/transactionMsg_m.o \
     $O/transactionSendMsg_m.o \
     $O/updateMsg_m.o \
-    $O/addFundsMsg_m.o
+    $O/addFundsMsg_m.o \
+    $O/wallet.o
 
 # Message files
 MSGFILES = \
@@ -94,6 +95,7 @@ endif
 
 include $(CONFIGFILE)
 
+CXXFLAGS += -std=c++17
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 

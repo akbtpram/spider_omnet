@@ -1,6 +1,9 @@
 #ifndef INITIALIZE_H
 #define INITIALIZE_H
 #include "hostInitialize.h"
+#include "wallet.h"
+
+
 
 bool probesRecent(unordered_map<int, PathInfo> probes){
     for (auto iter : probes){
@@ -1022,6 +1025,26 @@ bool sortEDF(const tuple<int,double, routerMsg*, Id, simtime_t> &a,
     transactionMsg *transB = check_and_cast<transactionMsg *>((get<2>(b))->getEncapsulatedPacket());
     
     return (transA->getTimeSent() < transB->getTimeSent());
+}
+
+// here wallet balance is initialise by calculating _channel and _balance variable. 
+void calculateWalletBalance(){
+    for (int i = 0; i < _numNodes; i++) {
+        double totalStake = 0;
+        _nodeChannelStakes[i] = {};
+        
+        // Calculate total stake across all channels
+        for (auto& channel : _channels[i]) {
+            int dest = channel.first;
+            tuple<int,int> edge = make_tuple(i, dest);
+            double stake = _balances[edge];
+            totalStake += stake;
+            _nodeChannelStakes[i][dest] = stake;
+        }
+        
+        // Initialize wallet with total stake
+        _nodeWalletBalances[i] = totalStake;
+    }
 }
 
 #endif

@@ -23,6 +23,7 @@
 #include "hostInitialize.h"
 
 
+
 using namespace std;
 using namespace omnetpp;
 
@@ -30,6 +31,7 @@ class routerNodeBase : public cSimpleModule
 {
     protected:
         unordered_map<int, PaymentChannel> nodeToPaymentChannel = {};
+        unordered_map<int, wallet> nodeToWallet = {};
         unordered_set<CanceledTrans, hashCanceledTrans, equalCanceledTrans> canceledTransactions = {};
         double amtSuccessfulSoFar = 0;
 
@@ -47,6 +49,7 @@ class routerNodeBase : public cSimpleModule
         virtual double getTotalAmountOutgoingInflight(int x);
         virtual void performRebalancing();
         virtual void setPaymentChannelBalanceByNode(int node, double balance);
+        virtual void setWalletBalance(int node, double balance);  // transaction wallet balance
         virtual void deleteTransaction(routerMsg* ttmsg);
         virtual void addFunds(map<int, double> pcsNeedingFunds);
 

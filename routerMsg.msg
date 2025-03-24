@@ -51,3 +51,15 @@ packet routerMsg
    
 }
 
+// Wallet request (node → wallet)
+message WalletRequestMsg {
+    int transactionId;
+    double amount;
+    int nextNode;
+}
+
+// Wallet response (wallet → node)
+message WalletResponseMsg {
+    int transactionId;
+    bool approved;
+}

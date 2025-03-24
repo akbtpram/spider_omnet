@@ -749,7 +749,7 @@ This script collects RTT data by pinging IP addresses associated with LND nodes,
 
 ---
 
-### **File: `config.py`**
+# Documentation for: `config.py`
 
 #### Purpose
 This script defines constants, graph structures, and configuration parameters used throughout the project.
